@@ -1,0 +1,77 @@
+I want to test my project in locust. login performance.  which has static OTP after give credential . code is 123456. credential is email sp1@gmail.com, pass 123456789. login page link 
+
+https://list.sanjoydeyreju.com/supervisor/login 
+
+I share login form HTML code here
+
+
+<form action="https://list.sanjoydeyreju.com/supervisor/login" method="post">
+            <input type="hidden" name="_token" value="mJCC94uE6QoKrcAVOXCbhPgHyg32yTBa8I3sRXmU" autocomplete="off">            <div class="input-group mb-3">
+                <input type="email" name="email" class="form-control" placeholder="Email">
+                <div class="input-group-append">
+                    <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                    </div>
+                </div>
+            </div>
+                        <div class="input-group mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Password">
+                <div class="input-group-append">
+                    <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
+                    </div>
+                </div>
+            </div>
+                        <div class="row">
+                <div class="col-8">
+                    <div class="icheck-primary">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">
+                            Remember Me
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </div>
+
+            </div>
+        </form> 
+
+
+
+login end
+
+
+https://list.sanjoydeyreju.com/supervisor/otp-verify
+
+<form method="POST" action="https://list.sanjoydeyreju.com/supervisor/otp-verify">
+            <input type="hidden" name="_token" value="mJCC94uE6QoKrcAVOXCbhPgHyg32yTBa8I3sRXmU" autocomplete="off">            <div class="input-group mb-3">
+                <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required="">
+                <div class="input-group-append">
+                    <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary btn-block">Verify</button>
+                </div>
+                <div class="col-md-6">OTP: 123456</div>
+
+            </div>
+        </form>
+
+
+python -m locust -H https://list.sanjoydeyreju.com
+
+python -m locust -f locustfile.py --host https://list.sanjoydeyreju.com
+
+
+
+
+

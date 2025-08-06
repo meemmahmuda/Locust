@@ -43,3 +43,30 @@ class WebsiteUser(HttpUser):
 
 
         #  python -m locust
+
+
+# import re
+# from locust import HttpUser, task, between
+
+# class WebsiteUser(HttpUser):
+#     wait_time = between(1, 3)
+
+#     @task
+#     def login(self):
+#         r = self.client.get("/supervisor/login")
+#         token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
+#         if not token:
+#             return
+#         login_res = self.client.post("/supervisor/login", data={
+#             "_token": token.group(1),
+#             "email": "sp1@gmail.com",
+#             "password": "123456789"
+#         })
+#         r = self.client.get("/supervisor/otp-verify")
+#         otp_token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
+#         if not otp_token:
+#             return
+#         self.client.post("/supervisor/otp-verify", data={
+#             "_token": otp_token.group(1),
+#             "otp": "123456"
+#         })
