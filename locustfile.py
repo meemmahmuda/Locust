@@ -72,7 +72,33 @@
 #         })
 
 
-import re
+# import re
+# from locust import HttpUser, task, between
+
+# class WebsiteUser(HttpUser):
+#     wait_time = between(1, 3)
+
+#     @task
+#     def login(self):
+#         r = self.client.get("/deliveryman/login")
+#         token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
+#         if not token:
+#             return
+#         login_res = self.client.post("/deliveryman/authenticate", data={
+#             "_token": token.group(1),
+#             "email": "dm1@gmail.com",
+#             "password": "123456789"
+#         })
+#         r = self.client.get("/deliveryman/otp-verify")
+#         otp_token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
+#         if not otp_token:
+#             return
+#         self.client.post("/deliveryman/otp-verify", data={
+#             "_token": otp_token.group(1),
+#             "otp": "123456"
+#         })
+
+
 from locust import HttpUser, task, between
 
 class WebsiteUser(HttpUser):
@@ -80,20 +106,27 @@ class WebsiteUser(HttpUser):
 
     @task
     def login(self):
-        r = self.client.get("/deliveryman/login")
-        token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
-        if not token:
-            return
-        login_res = self.client.post("/deliveryman/authenticate", data={
-            "_token": token.group(1),
-            "email": "dm1@gmail.com",
-            "password": "123456789"
-        })
-        r = self.client.get("/deliveryman/otp-verify")
-        otp_token = re.search(r'name="_token"\s*value="(.+?)"', r.text)
-        if not otp_token:
-            return
-        self.client.post("/deliveryman/otp-verify", data={
-            "_token": otp_token.group(1),
-            "otp": "123456"
-        })
+        # Step 1: Load login page to get cookies if any
+        response = self.client.get("tlentry/")
+
+        # Step 2: Prepare login form data
+        login_data = {
+            "log": "adminag",
+            "pwd": "WP@bd2025!",
+            "rememberme": "forever",
+            "wp-submit": "Log In",
+            "redirect_to": "https://tldelivery.rksoftwarebd.com/wp-admin/",
+            "testcookie": "1"
+        }
+
+        # Step 3: Post login form with redirects enabled to follow any redirects
+        login_response = self.client.post("tlentry/", data=login_data, allow_redirects=True)
+
+        # Step 4: After login, request the dashboard page explicitly
+        dashboard_response = self.client.get("wp-admin/")
+
+        # Step 5: Check if dashboard loaded successfully
+        if "Dashboard" in dashboard_response.text or "wp-admin-bar-logout" in dashboard_response.text:
+            print("✅ Login success and dashboard loaded")
+        else:
+            print("❌ Login failed or dashboard not accessible")
