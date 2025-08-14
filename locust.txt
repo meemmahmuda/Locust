@@ -71,6 +71,8 @@ python -m locust -H https://list.sanjoydeyreju.com
 
 python -m locust -f locustfile.py --host https://list.sanjoydeyreju.com
 
+py -m locust -f locustfile.py --host https://tldelivery.rksoftwarebd.com/
+
 
 
 
