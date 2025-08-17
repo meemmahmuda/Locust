@@ -99,56 +99,17 @@
 #         })
 
 
-# from locust import HttpUser, task, between
-
-# class WebsiteUser(HttpUser):
-#     wait_time = between(1, 3)
-
-#     @task
-#     def login(self):
-#         # Step 1: Load login page to get cookies if any
-#         response = self.client.get("tlentry/")
-
-#         # Step 2: Prepare login form data
-#         login_data = {
-#             "log": "adminag",
-#             "pwd": "WP@bd2025!",
-#             "rememberme": "forever",
-#             "wp-submit": "Log In",
-#             "redirect_to": "https://tldelivery.rksoftwarebd.com/wp-admin/",
-#             "testcookie": "1"
-#         }
-
-#         # Step 3: Post login form with redirects enabled to follow any redirects
-#         login_response = self.client.post("tlentry/", data=login_data, allow_redirects=True)
-
-#         # Step 4: After login, request the dashboard page explicitly
-#         dashboard_response = self.client.get("wp-admin/")
-
-#         # Step 5: Check if dashboard loaded successfully
-#         if "Dashboard" in dashboard_response.text or "wp-admin-bar-logout" in dashboard_response.text:
-#             print("Login success and dashboard loaded")
-#         else:
-#             print("Login failed or dashboard not accessible")
-
-
-
-
-from locust import HttpUser, task, constant
+from locust import HttpUser, task, between
 
 class WebsiteUser(HttpUser):
-    # Fixed wait time between tasks for more consistent results
-    wait_time = constant(1)
+    wait_time = between(1, 3)
 
-    def on_start(self):
-        """
-        Runs once when each simulated user starts.
-        Logs in and keeps the session.
-        """
-        # Step 1: Load login page to set cookies
+    @task
+    def login(self):
+        # Step 1: Load login page
         self.client.get("tlentry/")
 
-        # Step 2: Login form data
+        # Step 2: Prepare login form data
         login_data = {
             "log": "adminag",
             "pwd": "WP@bd2025!",
@@ -158,18 +119,12 @@ class WebsiteUser(HttpUser):
             "testcookie": "1"
         }
 
-        # Step 3: Submit login
-        login_response = self.client.post("tlentry/", data=login_data, allow_redirects=True)
+        # Step 3: Post login form
+        self.client.post("tlentry/", data=login_data, allow_redirects=True)
 
-        # Optional check for successful login
-        if login_response.status_code != 200:
-            print(f"Login failed with status: {login_response.status_code}")
-
-    @task
-    def view_dashboard(self):
-        """
-        Simulates a logged-in user visiting the dashboard.
-        """
-        dashboard_response = self.client.get("wp-admin/")
-        if dashboard_response.status_code != 200:
-            print(f"Dashboard load failed: {dashboard_response.status_code}")
+        # Step 4: Access dashboard to check login
+        response = self.client.get("wp-admin/")
+        if "Dashboard" in response.text:
+            print("Login success")
+        else:
+            print("Login failed")
