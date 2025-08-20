@@ -99,32 +99,32 @@
 #         })
 
 
-# from locust import HttpUser, task, between
+from locust import HttpUser, task, between
 
-# class WebsiteUser(HttpUser):
-#     wait_time = between(1, 3)
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 3)
 
-#     @task
-#     def login(self):
-#         # Step 1: Load login page
-#         self.client.get("tlentry/")
+    @task
+    def login(self):
+        # Step 1: Load login page
+        self.client.get("tlentry/")
 
-#         # Step 2: Prepare login form data
-#         login_data = {
-#             "log": "adminag",
-#             "pwd": "WP@bd2025!",
-#             "rememberme": "forever",
-#             "wp-submit": "Log In",
-#             "redirect_to": "https://tldelivery.rksoftwarebd.com/wp-admin/",
-#             "testcookie": "1"
-#         }
+        # Step 2: Prepare login form data
+        login_data = {
+            "log": "adminag",
+            "pwd": "WP@bd2025!",
+            "rememberme": "forever",
+            "wp-submit": "Log In",
+            "redirect_to": "https://tldelivery.rksoftwarebd.com/wp-admin/",
+            "testcookie": "1"
+        }
 
-#         # Step 3: Post login form
-#         self.client.post("tlentry/", data=login_data, allow_redirects=True)
+        # Step 3: Post login form
+        self.client.post("tlentry/", data=login_data, allow_redirects=True)
 
-#         # Step 4: Access dashboard to check login
-#         response = self.client.get("wp-admin/")
-#         if "Dashboard" in response.text:
-#             print("Login success")
-#         else:
-#             print("Login failed")
+        # Step 4: Access dashboard to check login
+        response = self.client.get("wp-admin/")
+        if "Dashboard" in response.text:
+            print("Login success")
+        else:
+            print("Login failed")
