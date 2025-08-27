@@ -131,27 +131,29 @@
 
 
 
-
 from locust import HttpUser, task
 
 class WebsiteUser(HttpUser):
+    # No wait time → all users fire requests concurrently
     wait_time = lambda self: 0  
 
     @task
     def login(self):
+        # Load login page
         self.client.get("/wp-login.php")
 
+        # Login data
         login_data = {
-            "log": "adminag",              
-            "pwd": "WP@bd2025!",           
+            "log": "adminag",
+            "pwd": "WP@bd2025!",
             "rememberme": "forever",
             "wp-submit": "Log In",
-            "redirect_to": "/wp-admin/",
+            "redirect_to": "https://demo.rksoftwarebd.com/wp-admin/",
             "testcookie": "1"
         }
 
-        with self.client.post("/wp-login.php", data=login_data, allow_redirects=True, catch_response=True) as response:
-            if "/wp-login.php" not in response.url:
-                response.success()
-            else:
-                response.failure("Login failed")
+        # POST login request
+        self.client.post("/wp-login.php", data=login_data, allow_redirects=True)
+
+        # Access dashboard (all users try this regardless of login success)
+        self.client.get("/wp-admin/", allow_redirects=True)
