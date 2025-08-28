@@ -99,40 +99,40 @@
 #         })
 
 
-# from locust import HttpUser, task, between
+from locust import HttpUser, task, between
 
-# class WebsiteUser(HttpUser):
-#     wait_time = between(1, 3)
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 3)
 
-#     @task
-#     def login(self):
-#         self.client.get("/tlentry/")
+    @task
+    def login(self):
+        self.client.get("/tlentry/")
 
-#         login_data = {
-#             "log": "adminag",
-#             "pwd": "WP@bd2025!",
-#             "rememberme": "forever",
-#             "wp-submit": "Log In",
-#             "redirect_to": "/wp-admin/",
-#             "testcookie": "1"
-#         }
+        login_data = {
+            "log": "adminag",
+            "pwd": "WP@bd2025!",
+            "rememberme": "forever",
+            "wp-submit": "Log In",
+            "redirect_to": "/wp-admin/",
+            "testcookie": "1"
+        }
 
-#         with self.client.post("/tlentry/", data=login_data, allow_redirects=True, catch_response=True) as post_response:
-#             if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
-#                 post_response.success()
-#                 print("Login success")
-#             else:
-#                 post_response.failure("Login failed")
-#                 print("Login failed")
-#                 return  
+        with self.client.post("/tlentry/", data=login_data, allow_redirects=True, catch_response=True) as post_response:
+            if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
+                post_response.success()
+                print("Login success")
+            else:
+                post_response.failure("Login failed (no cookie)")
+                print("Login failed (no cookie)")
+                return  
 
-#         with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
-#             if "/wp-admin/" in admin_response.url:
-#                 admin_response.success()
-#                 print("Accessed admin page successfully")
-#             else:
-#                 admin_response.failure("Failed to access admin page")
-#                 print("Failed to access admin page")
+        with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
+            if "Dashboard" in admin_response.text in admin_response.text:
+                admin_response.success()
+                print("Accessed admin page successfully")
+            else:
+                admin_response.failure("Failed to access admin page content")
+                print("Failed to access admin page content")
 
 
 
