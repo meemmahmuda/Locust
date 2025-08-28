@@ -99,44 +99,6 @@
 #         })
 
 
-from locust import HttpUser, task, between
-
-class WebsiteUser(HttpUser):
-    wait_time = between(1, 3)
-
-    @task
-    def login(self):
-        self.client.get("/tlentry/")
-
-        login_data = {
-            "log": "adminag",
-            "pwd": "WP@bd2025!",
-            "rememberme": "forever",
-            "wp-submit": "Log In",
-            "redirect_to": "/wp-admin/",
-            "testcookie": "1"
-        }
-
-        with self.client.post("/tlentry/", data=login_data, allow_redirects=True, catch_response=True) as post_response:
-            if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
-                post_response.success()
-                print("Login success")
-            else:
-                post_response.failure("Login failed (no cookie)")
-                print("Login failed (no cookie)")
-                return  
-
-        with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
-            if "Dashboard" in admin_response.text in admin_response.text:
-                admin_response.success()
-                print("Accessed admin page successfully")
-            else:
-                admin_response.failure("Failed to access admin page content")
-                print("Failed to access admin page content")
-
-
-
-
 # from locust import HttpUser, task, between
 
 # class WebsiteUser(HttpUser):
@@ -144,7 +106,7 @@ class WebsiteUser(HttpUser):
 
 #     @task
 #     def login(self):
-#         self.client.get("/wp-login.php")
+#         self.client.get("/tlentry/")
 
 #         login_data = {
 #             "log": "adminag",
@@ -155,19 +117,55 @@ class WebsiteUser(HttpUser):
 #             "testcookie": "1"
 #         }
 
-#         with self.client.post("/wp-login.php", data=login_data, allow_redirects=True, catch_response=True) as post_response:
+#         with self.client.post("/tlentry/", data=login_data, allow_redirects=True, catch_response=True) as post_response:
 #             if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
 #                 post_response.success()
 #                 print("Login success")
 #             else:
-#                 post_response.failure("Login failed")
-#                 print("Login failed")
+#                 post_response.failure("Login failed (no cookie)")
+#                 print("Login failed (no cookie)")
 #                 return  
 
 #         with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
-#             if "/wp-admin/" in admin_response.url:
+#             if "Dashboard" in admin_response.text in admin_response.text:
 #                 admin_response.success()
 #                 print("Accessed admin page successfully")
 #             else:
-#                 admin_response.failure("Failed to access admin page")
-#                 print("Failed to access admin page")
+#                 admin_response.failure("Failed to access admin page content")
+#                 print("Failed to access admin page content")
+
+
+
+
+from locust import HttpUser, task, between
+
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 3)
+
+    def on_start(self):
+        self.client.get("/wp-login.php")
+        data = {
+            "log": "adminag",
+            "pwd": "WP@bd2025!",
+            "rememberme": "forever",
+            "wp-submit": "Log In",
+            "redirect_to": "/wp-admin/",
+            "testcookie": "1"
+        }
+        with self.client.post("/wp-login.php", data=data, allow_redirects=False, catch_response=True) as r:
+            cookies = self.client.cookies.get_dict()
+            if any(k.startswith("wordpress_logged_in") for k in cookies):
+                r.success()
+                print("Login success")
+            else:
+                r.failure("Login failed")
+        self.client.get(r.headers.get("Location", "/wp-admin/"))
+
+    @task
+    def access_admin(self):
+        r = self.client.get("/wp-admin/")
+        cookies = self.client.cookies.get_dict()
+        if r.status_code == 200 and any(k.startswith("wordpress_logged_in") for k in cookies):
+            print("Accessed admin page")
+        else:
+            print("Failed admin page")
