@@ -106,54 +106,68 @@
 
 #     @task
 #     def login(self):
-        
-#         self.client.get("tlentry/")
+#         self.client.get("/tlentry/")
 
-        
 #         login_data = {
 #             "log": "adminag",
 #             "pwd": "WP@bd2025!",
 #             "rememberme": "forever",
 #             "wp-submit": "Log In",
-#             "redirect_to": "https://tldelivery.rksoftwarebd.com/wp-admin/",
+#             "redirect_to": "/wp-admin/",
 #             "testcookie": "1"
 #         }
 
-        
-#         self.client.post("tlentry/", data=login_data, allow_redirects=True)
+#         with self.client.post("/tlentry/", data=login_data, allow_redirects=True, catch_response=True) as post_response:
+#             if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
+#                 post_response.success()
+#                 print("Login success")
+#             else:
+#                 post_response.failure("Login failed")
+#                 print("Login failed")
+#                 return  
 
-       
-#         response = self.client.get("wp-admin/")
-#         if "Dashboard" in response.text:
-#             print("Login success")
-#         else:
-#             print("Login failed")
+#         with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
+#             if "/wp-admin/" in admin_response.url:
+#                 admin_response.success()
+#                 print("Accessed admin page successfully")
+#             else:
+#                 admin_response.failure("Failed to access admin page")
+#                 print("Failed to access admin page")
 
 
 
-from locust import HttpUser, task
 
-class WebsiteUser(HttpUser):
-    # No wait time → all users fire requests concurrently
-    wait_time = lambda self: 0  
+# from locust import HttpUser, task, between
 
-    @task
-    def login(self):
-        # Load login page
-        self.client.get("/wp-login.php")
+# class WebsiteUser(HttpUser):
+#     wait_time = between(1, 3)
 
-        # Login data
-        login_data = {
-            "log": "adminag",
-            "pwd": "WP@bd2025!",
-            "rememberme": "forever",
-            "wp-submit": "Log In",
-            "redirect_to": "https://demo.rksoftwarebd.com/wp-admin/",
-            "testcookie": "1"
-        }
+#     @task
+#     def login(self):
+#         self.client.get("/wp-login.php")
 
-        # POST login request
-        self.client.post("/wp-login.php", data=login_data, allow_redirects=True)
+#         login_data = {
+#             "log": "adminag",
+#             "pwd": "WP@bd2025!",
+#             "rememberme": "forever",
+#             "wp-submit": "Log In",
+#             "redirect_to": "/wp-admin/",
+#             "testcookie": "1"
+#         }
 
-        # Access dashboard (all users try this regardless of login success)
-        self.client.get("/wp-admin/", allow_redirects=True)
+#         with self.client.post("/wp-login.php", data=login_data, allow_redirects=True, catch_response=True) as post_response:
+#             if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
+#                 post_response.success()
+#                 print("Login success")
+#             else:
+#                 post_response.failure("Login failed")
+#                 print("Login failed")
+#                 return  
+
+#         with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
+#             if "/wp-admin/" in admin_response.url:
+#                 admin_response.success()
+#                 print("Accessed admin page successfully")
+#             else:
+#                 admin_response.failure("Failed to access admin page")
+#                 print("Failed to access admin page")
