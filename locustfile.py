@@ -16,6 +16,37 @@
 #         self.client.get("/")
 
 
+
+from locust import HttpUser, task, between
+
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 3)
+
+    def on_start(self):
+        self.logged_in = False  
+
+      
+        with self.client.post(
+            "/new_sort/login.php",
+            data={"username": "admin1", "password": "123"},
+            name="Login",
+            catch_response=True
+        ) as response:
+            if "Invalid" in response.text or "incorrect" in response.text.lower():
+                response.failure("Invalid username or password.")
+            else:
+                response.success()
+                self.logged_in = True
+
+        if self.logged_in:
+            self.client.get("/new_sort/upload.php", name="Visit Upload Page")
+
+ 
+    @task
+    def stop_task(self):
+        self.stop(True)  
+
+
 # import re
 # from locust import HttpUser, task, between
 
@@ -38,7 +69,6 @@
 #             "password": "111",
 #             "_token": token.group(1)
 #         }, name="Login")
-
 
 
 
@@ -137,40 +167,40 @@
 
 
 
-from locust import HttpUser, task, between
+# from locust import HttpUser, task, between
 
-class WebsiteUser(HttpUser):
-    wait_time = between(1, 3)
+# class WebsiteUser(HttpUser):
+#     wait_time = between(1, 3)
 
-    @task
-    def login(self):
-        self.client.get("/wp-login.php")
+#     @task
+#     def login(self):
+#         self.client.get("/wp-login.php")
 
-        login_data = {
-            "log": "adminag",
-            "pwd": "WP@bd2025!",
-            "rememberme": "forever",
-            "wp-submit": "Log In",
-            "redirect_to": "/wp-admin/",
-            "testcookie": "1"
-        }
+#         login_data = {
+#             "log": "adminag",
+#             "pwd": "WP@bd2025!",
+#             "rememberme": "forever",
+#             "wp-submit": "Log In",
+#             "redirect_to": "/wp-admin/",
+#             "testcookie": "1"
+#         }
 
-        with self.client.post("/wp-login.php", data=login_data, allow_redirects=True, catch_response=True) as post_response:
-            if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
-                post_response.success()
-                print("Login success")
-            else:
-                post_response.failure("Login failed (no cookie)")
-                print("Login failed (no cookie)")
-                return  
+#         with self.client.post("/wp-login.php", data=login_data, allow_redirects=True, catch_response=True) as post_response:
+#             if any(name.startswith("wordpress_logged_in") for name in self.client.cookies.keys()):
+#                 post_response.success()
+#                 print("Login success")
+#             else:
+#                 post_response.failure("Login failed (no cookie)")
+#                 print("Login failed (no cookie)")
+#                 return  
 
-        with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
-            if "Dashboard" in admin_response.text in admin_response.text:
-                admin_response.success()
-                print("Accessed admin page successfully")
-            else:
-                admin_response.failure("Failed to access admin page content")
-                print("Failed to access admin page content")
+#         with self.client.get("/wp-admin/", allow_redirects=True, catch_response=True) as admin_response:
+#             if "Dashboard" in admin_response.text in admin_response.text:
+#                 admin_response.success()
+#                 print("Accessed admin page successfully")
+#             else:
+#                 admin_response.failure("Failed to access admin page content")
+#                 print("Failed to access admin page content")
 
 
 
@@ -182,7 +212,7 @@ class WebsiteUser(HttpUser):
 #     wait_time = between(1, 3)
 
 #     def on_start(self):
-#         self.client.get("/wp-login.php")
+#         self.client.get("/tlentry/")
 #         data = {
 #             "log": "adminag",
 #             "pwd": "WP@bd2025!",
@@ -191,7 +221,7 @@ class WebsiteUser(HttpUser):
 #             "redirect_to": "/wp-admin/",
 #             "testcookie": "1"
 #         }
-#         with self.client.post("/wp-login.php", data=data, allow_redirects=False, catch_response=True) as r:
+#         with self.client.post("/tlentry/", data=data, allow_redirects=False, catch_response=True) as r:
 #             cookies = self.client.cookies.get_dict()
 #             if any(k.startswith("wordpress_logged_in") for k in cookies):
 #                 r.success()
