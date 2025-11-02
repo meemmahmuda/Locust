@@ -27,8 +27,8 @@ class WebsiteUser(HttpUser):
 
       
         with self.client.post(
-            "/new_sort/login.php",
-            data={"username": "admin1", "password": "123"},
+            "/login.php",
+            data={"username": "Mahmuda", "password": "123"},
             name="Login",
             catch_response=True
         ) as response:
@@ -39,7 +39,7 @@ class WebsiteUser(HttpUser):
                 self.logged_in = True
 
         if self.logged_in:
-            self.client.get("/new_sort/upload.php", name="Visit Upload Page")
+            self.client.get("/upload.php", name="Visit Upload Page")
 
  
     @task
