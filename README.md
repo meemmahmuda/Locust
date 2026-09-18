@@ -103,7 +103,7 @@ python -m locust -f locustfile.py
 Or specify the target host:
 
 ```bash
-python -m locust -f locustfile.py --host https://your-application.com
+python -m locust -f locustfile.py --host https://erevenue.dncc.gov.bd/newv/
 ```
 
 After starting Locust, open:
